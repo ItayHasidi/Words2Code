@@ -1,0 +1,33 @@
+#### in pseudo:
+
+a = [1,15,5,2,23,6,8,9,14,0,1]
+n = len(a)
+max = a[0], comparisons = 0
+for i=1 to n-1
+	comparisons++
+	if a[i] > max
+		max = a[i]
+	end-if
+end-for
+min = a[0]
+for i=1 to n-1
+	comparisons++
+	if a[i] < min
+		min = a[i]
+	end-if
+end-for
+
+##### in python:
+
+a = [1,15,5,2,23,6,8,9,14,0,1]
+n = len(a)
+max = a[0], comparisons = 0
+for i in n-1:
+	comparisons += 1
+	if a[i] > max:
+		max = a[i]
+min = a[0]
+for i in n-1:
+	comparisons += 1
+	if a[i] < min:
+		min = a[i]

@@ -1,0 +1,16 @@
+public class main{
+    public static void main(String[] args){
+        // List of numbers
+        int[] numbers = {6, 5, 3, 8, 4, 2, 5, 4, 11};
+
+        // variable to store the sum
+        int sum = 0;
+
+        // iterate over the list
+        for (int num : numbers){
+            sum += num;
+        }
+
+        System.out.println("The sum is", sum);
+    }
+}
