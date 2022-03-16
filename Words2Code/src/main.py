@@ -1,27 +1,15 @@
-# import easyocr
-# import cv2
-# from matplotlib import pyplot as plt
-# import numpy as np
-#
-# imgPath1 = "images//text_example_1.jpg"
-# imgPath2 = "images//text_example_2.jpg"
-#
-# reader = easyocr.Reader(['en'], gpu=False)
-# result = reader.readtext(imgPath2)
-# # print(result)
-
-
-from PIL import Image
 import pytesseract as pytes
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
+import pseudoToCode
+from PIL import Image
 import matplotlib.image as mpimg
 
-pytes.pytesseract.tesseract_cmd = 'C://Program Files//Tesseract-OCR//tesseract.exe'
-# filename = 'images/text_example_2.jpg'
-# filename = 'images//Capture.PNG'
-filename = 'images//img_1.png'
+pytes.pytesseract.tesseract_cmd = 'C:/Users/Aviem/AppData/Local/Programs/Tesseract-OCR/tesseract.exe'
+# filename = '../images/text_example_2.jpg'
+# filename = '../images//Capture.PNG'
+# filename = '../images/img_1.png'
+filename = '../images/CAPTURE.png'
 
 img1 = np.array(Image.open(filename))
 
@@ -32,8 +20,9 @@ img = cv2.GaussianBlur(img, (1, 1), 0)
 
 text = pytes.image_to_string(img1)
 
+text = "im jusrt checking to see if therr are any prbles"
+pseudoToCode.check_syntax(text)
 print(text)
 
-
-plt.imshow(img)
-plt.show()
+# plt.imshow(img)
+# plt.show()

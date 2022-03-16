@@ -1,17 +1,16 @@
-# this function opens the output file created from the ocr algo
-def extract_txt():
-    file = open("../output/output_java_3.txt", "r")
-    return file
+from autocorrect import Speller
 
 
-def check_syntax():
-    file = extract_txt()
-    lines = file.readlines()
-    for line in lines:
-        # print(line)
-        words = line.split(" ")
+def check_syntax(file_name):
+    # file = open(file_name, "r")
+    # lines = file.readlines()
+    # for line in lines:
+    # words = line.split(" ")
+    # spell = Speller(only_replacements=True)
+    spell = Speller()
+    print(spell(file_name))
 
-        print(words)
 
-check_syntax()
+if __name__ == '__main__':
+    check_syntax()
 # print(extract_txt().read())
