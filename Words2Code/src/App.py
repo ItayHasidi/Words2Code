@@ -10,12 +10,10 @@ class App:
     def __init__(self):
         self.master = Tk()
         # sv_ttk.set_theme("dark")  # Set sv_ttk theme
-
         # Import the tcl file
         self.master.tk.call('source', 'C:/Users/Aviem/PycharmProjects/Words2Code/Words2Code/themes/forest-dark.tcl')
         # Set the theme with the theme_use method
         ttk.Style().theme_use('forest-dark')
-
         self.master.title("Words2Code")
         self.outputBar = None
         self.codeView = None
@@ -64,14 +62,14 @@ class App:
         # CODE EDIT TAB
 
         runButt = ttk.Button(self.Codetab, width=5, style="Accent.TButton", text="Run", command=self.run)
-        runButt.grid(row=0, column=2)
+        runButt.grid(row=0, column=3)
 
         uploadButt = ttk.Button(self.Codetab, text="Upload", width=6, style="Accent.TButton",
                                 command=self.uploadPicture)
-        uploadButt.grid(row=1, column=2, pady=150)
+        uploadButt.grid(row=1, column=3, pady=150)
 
         clearButt = ttk.Button(self.Codetab, text="Clear", style="Accent.TButton", command=self.codeClear)
-        clearButt.grid(row=2, column=2)
+        clearButt.grid(row=2, column=3)
 
         lineNumbers = Label(self.Codetab, width=3, bg="#313131", fg="#cccaca",
                             font=('candara', 13))
@@ -84,12 +82,17 @@ class App:
 
         self.codeView = Text(self.Codetab, bg="white", fg="black", insertbackground="black",
                              font=('candara', 13, 'bold'))
-        self.codeView.grid(row=0, column=1, rowspan=3, sticky="nswe")
+        self.codeView.grid(row=0, column=2, rowspan=3, sticky="nswe")
         self.codeView.event_add('<<Paste>>', '<Control-v>')
         self.codeView.event_add('<<Copy>>', '<Control-c>')
 
+        # Create a scrollbar
+        scroll_bar = ttk.Scrollbar(self.Codetab, command=self.codeView.yview)
+        self.codeView['yscrollcommand'] = scroll_bar.set
+        scroll_bar.grid(row=0, column=1, rowspan=3, sticky="ns")
+
         self.outputBar = Label(self.Codetab, text="Ready", font=('calibri', 11), relief=GROOVE, anchor="w")
-        self.outputBar.grid(row=3, column=0, columnspan=3, sticky="nswe")
+        self.outputBar.grid(row=3, column=0, columnspan=4, sticky="nswe")
 
         # PSEUDO CANVAS TAB
 
@@ -112,7 +115,7 @@ class App:
         self.c.grid(row=0, column=0, rowspan=3, sticky="nswe")
 
         image = Image.open("C:/Users/Aviem/PycharmProjects/Words2Code/Words2Code/images/Untitled-lines.png")
-        resized_image = image.resize((750, 900), Image.ANTIALIAS)
+        resized_image = image.resize((770, 900), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(resized_image)
 
         self.c.bind('<B1-Motion>', self.paint)  # drawing the line
