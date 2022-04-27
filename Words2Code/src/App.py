@@ -12,7 +12,7 @@ class App:
         # sv_ttk.set_theme("dark")  # Set sv_ttk theme
 
         # Import the tcl file
-        self.master.tk.call('source', '../themes/forest-dark.tcl')
+        self.master.tk.call('source', 'C:/Users/Aviem/PycharmProjects/Words2Code/Words2Code/themes/forest-dark.tcl')
         # Set the theme with the theme_use method
         ttk.Style().theme_use('forest-dark')
 
@@ -111,8 +111,8 @@ class App:
         self.c = Canvas(self.HandWritetab, bg="white")
         self.c.grid(row=0, column=0, rowspan=3, sticky="nswe")
 
-        image = Image.open("../images/Untitled-lines.png")
-        resized_image = image.resize((750, 760), Image.ANTIALIAS)
+        image = Image.open("C:/Users/Aviem/PycharmProjects/Words2Code/Words2Code/images/Untitled-lines.png")
+        resized_image = image.resize((750, 900), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(resized_image)
 
         self.c.bind('<B1-Motion>', self.paint)  # drawing the line
