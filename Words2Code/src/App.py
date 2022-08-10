@@ -1,6 +1,5 @@
 import subprocess
 from tkinter import *
-import sv_ttk
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk, ImageGrab
 
@@ -11,7 +10,7 @@ class App:
         self.master = Tk()
         # sv_ttk.set_theme("dark")  # Set sv_ttk theme
         # Import the tcl file
-        self.master.tk.call('source', 'C:/Users/Aviem/PycharmProjects/Words2Code/Words2Code/themes/forest-dark.tcl')
+        self.master.tk.call('source', 'themes/forest-dark.tcl')
         # Set the theme with the theme_use method
         ttk.Style().theme_use('forest-dark')
         self.master.title("Words2Code")
@@ -114,7 +113,7 @@ class App:
         self.c = Canvas(self.HandWritetab, bg="white")
         self.c.grid(row=0, column=0, rowspan=3, sticky="nswe")
 
-        image = Image.open("C:/Users/Aviem/PycharmProjects/Words2Code/Words2Code/images/Untitled-lines.png")
+        image = Image.open("images/Untitled-lines.png")
         resized_image = image.resize((770, 900), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(resized_image)
 
@@ -167,7 +166,7 @@ class App:
             y = self.HandWritetab.winfo_rooty() + self.c.winfo_y()
             x1 = x + self.c.winfo_width()
             y1 = y + self.c.winfo_height()
-            ImageGrab.grab().crop((x, y, x1, y1)).save("saved-canvas.jpg")
+            ImageGrab.grab().crop((x, y, x1, y1)).save("resources/in/canvas.jpg")
             # OCR FUNCTION HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             self.c.delete("user_paint")
             self.tabControl.select(self.Codetab)
