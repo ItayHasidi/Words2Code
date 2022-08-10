@@ -1,7 +1,7 @@
 import subprocess
-from tkinter import *
 from tkinter import ttk, filedialog
-from PIL import Image, ImageTk, ImageGrab
+from PIL import Image, ImageTk
+from PIL import ImageDraw
 
 
 class App:
@@ -11,9 +11,12 @@ class App:
         # sv_ttk.set_theme("dark")  # Set sv_ttk theme
         # Import the tcl file
         self.master.tk.call('source', 'themes/forest-dark.tcl')
+
         # Set the theme with the theme_use method
         ttk.Style().theme_use('forest-dark')
         self.master.title("Words2Code")
+        self.GlobalCoord = []
+        self.coord = []
         self.outputBar = None
         self.codeView = None
         self.pattern = None
@@ -23,7 +26,7 @@ class App:
         self.c = None
         self.old_x = None
         self.old_y = None
-        self.penwidth = 1
+        self.penwidth = 3
         self.drawWidgets()
         self.draw_canvas()
 
@@ -32,6 +35,12 @@ class App:
                                           capstyle=ROUND, smooth=True, tags="user_paint")
         self.old_x = e.x
         self.old_y = e.y
+        self.coord.append(e.x)
+        self.coord.append(e.y)
+
+    def released(self, event):
+        self.GlobalCoord.append(self.coord)
+        self.coord = []
 
     def get_x_and_y(self, event):
         self.old_x, self.old_y = event.x, event.y
@@ -56,7 +65,7 @@ class App:
         self.HandWritetab.pack(fill='both', expand=True)
 
         self.tabControl.add(self.Codetab, text='Code')
-        self.tabControl.add(self.HandWritetab, text='Pseudo-Editior')
+        self.tabControl.add(self.HandWritetab, text='Pseudo-Editor')
 
         # CODE EDIT TAB
 
@@ -119,6 +128,7 @@ class App:
 
         self.c.bind('<B1-Motion>', self.paint)  # drawing the line
         self.c.bind("<Button-1>", self.get_x_and_y)
+        self.c.bind("<ButtonRelease-1>", self.released)
 
         self.c.create_image(0, 0, image=image, anchor='nw')
         self.master.mainloop()
@@ -166,7 +176,16 @@ class App:
             y = self.HandWritetab.winfo_rooty() + self.c.winfo_y()
             x1 = x + self.c.winfo_width()
             y1 = y + self.c.winfo_height()
-            ImageGrab.grab().crop((x, y, x1, y1)).save("resources/in/canvas.jpg")
+
+            # PIL create an empty image and draw object to draw on
+            # memory only, not visible
+            image1 = Image.new("RGB", (x1, y1), (255, 255, 255))
+            draw = ImageDraw.Draw(image1)
+            for t in self.GlobalCoord:
+                draw.line(t, fill=(0, 0, 0), width=5)
+            # PIL image can be saved as .png .jpg .gif or .bmp file
+            filename = "my_drawing.jpg"
+            image1.save(filename)
             # OCR FUNCTION HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             self.c.delete("user_paint")
             self.tabControl.select(self.Codetab)
