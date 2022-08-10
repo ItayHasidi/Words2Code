@@ -1,5 +1,7 @@
+import os
 import subprocess
-from tkinter import ttk, filedialog
+from tkinter import *
+from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 from PIL import ImageDraw
 
@@ -7,11 +9,10 @@ from PIL import ImageDraw
 class App:
 
     def __init__(self):
-        self.master = ttk.Tk()
-        # sv_ttk.set_theme("dark")  # Set sv_ttk theme
+        self.master = Tk()
         # Import the tcl file
-        self.master.tk.call('source', 'themes/forest-dark.tcl')
-
+        self.master.tk.call('source', '../themes/forest-dark.tcl')
+        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
         # Set the theme with the theme_use method
         ttk.Style().theme_use('forest-dark')
         self.master.title("Words2Code")
@@ -79,8 +80,8 @@ class App:
         clearButt = ttk.Button(self.Codetab, text="Clear", style="Accent.TButton", command=self.codeClear)
         clearButt.grid(row=2, column=3)
 
-        lineNumbers = ttk.Label(self.Codetab, width=3, bg="#313131", fg="#cccaca",
-                            font=('candara', 13))
+        lineNumbers = ttk.Label(self.Codetab, width=3, background="#313131", foreground="#cccaca",
+                                font=('candara', 13))
         line = ""
         for i in range(1, 36):
             line += str(i) + "\n"
@@ -88,7 +89,7 @@ class App:
         lineNumbers.configure(text=line)
         lineNumbers.grid(row=0, column=0, rowspan=3, sticky="w")
 
-        self.codeView = ttk.Text(self.Codetab, bg="white", fg="black", insertbackground="black",
+        self.codeView = Text(self.Codetab, bg="white", fg="black", insertbackground="black",
                              font=('candara', 13, 'bold'))
         self.codeView.grid(row=0, column=2, rowspan=3, sticky="nswe")
         self.codeView.event_add('<<Paste>>', '<Control-v>')
@@ -107,7 +108,7 @@ class App:
         pen_label = ttk.Label(self.HandWritetab, text='Pen Width', font=('candara', 11, 'bold'))
         pen_label.grid(row=0, column=1, sticky=N, pady=80)
 
-        slider = ttk.Scale(self.HandWritetab, from_=1, to=4, command=self.changeW, orient=VERTICAL)
+        slider = ttk.Scale(self.HandWritetab, from_=3, to=5, command=self.changeW, orient=VERTICAL)
         slider.set(self.penwidth)
         slider.grid(row=0, column=1, sticky=N, pady=120)
 
@@ -122,7 +123,7 @@ class App:
         self.c = Canvas(self.HandWritetab, bg="white")
         self.c.grid(row=0, column=0, rowspan=3, sticky="nswe")
 
-        image = Image.open("images/Untitled-lines.png")
+        image = Image.open("../images/Untitled-lines.png")
         resized_image = image.resize((770, 900), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(resized_image)
 
@@ -188,7 +189,16 @@ class App:
             image1.save(filename)
             # OCR FUNCTION HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             self.c.delete("user_paint")
+            self.GlobalCoord = []
             self.tabControl.select(self.Codetab)
+
+    def on_close(self):
+        if messagebox.askokcancel("Quit", "Sure you want to quit?"):
+            if os.path.isfile("temp.py"):
+                os.remove("temp.py")
+            if os.path.isfile("my_drawing.jpg"):
+                os.remove("my_drawing.jpg")
+            self.master.destroy()
 
 
 if __name__ == '__main__':
