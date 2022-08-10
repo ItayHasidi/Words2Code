@@ -7,7 +7,7 @@ from PIL import ImageDraw
 class App:
 
     def __init__(self):
-        self.master = Tk()
+        self.master = ttk.Tk()
         # sv_ttk.set_theme("dark")  # Set sv_ttk theme
         # Import the tcl file
         self.master.tk.call('source', 'themes/forest-dark.tcl')
@@ -79,7 +79,7 @@ class App:
         clearButt = ttk.Button(self.Codetab, text="Clear", style="Accent.TButton", command=self.codeClear)
         clearButt.grid(row=2, column=3)
 
-        lineNumbers = Label(self.Codetab, width=3, bg="#313131", fg="#cccaca",
+        lineNumbers = ttk.Label(self.Codetab, width=3, bg="#313131", fg="#cccaca",
                             font=('candara', 13))
         line = ""
         for i in range(1, 36):
@@ -88,7 +88,7 @@ class App:
         lineNumbers.configure(text=line)
         lineNumbers.grid(row=0, column=0, rowspan=3, sticky="w")
 
-        self.codeView = Text(self.Codetab, bg="white", fg="black", insertbackground="black",
+        self.codeView = ttk.Text(self.Codetab, bg="white", fg="black", insertbackground="black",
                              font=('candara', 13, 'bold'))
         self.codeView.grid(row=0, column=2, rowspan=3, sticky="nswe")
         self.codeView.event_add('<<Paste>>', '<Control-v>')
@@ -99,12 +99,12 @@ class App:
         self.codeView['yscrollcommand'] = scroll_bar.set
         scroll_bar.grid(row=0, column=1, rowspan=3, sticky="ns")
 
-        self.outputBar = Label(self.Codetab, text="Ready", font=('calibri', 11), relief=GROOVE, anchor="w")
+        self.outputBar = ttk.Label(self.Codetab, text="Ready", font=('calibri', 11), relief=GROOVE, anchor="w")
         self.outputBar.grid(row=3, column=0, columnspan=4, sticky="nswe")
 
         # PSEUDO CANVAS TAB
 
-        pen_label = Label(self.HandWritetab, text='Pen Width', font=('candara', 11, 'bold'))
+        pen_label = ttk.Label(self.HandWritetab, text='Pen Width', font=('candara', 11, 'bold'))
         pen_label.grid(row=0, column=1, sticky=N, pady=80)
 
         slider = ttk.Scale(self.HandWritetab, from_=1, to=4, command=self.changeW, orient=VERTICAL)
