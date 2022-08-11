@@ -1,7 +1,7 @@
 # make a prediction for a new image.
 from numpy import argmax
-from keras.utils.image_utils import load_img
-from keras.utils.image_utils import img_to_array
+# import tensorflow.keras as keras
+from keras.utils.image_utils import load_img, img_to_array
 from keras.models import load_model
 import os
 from keras.datasets import mnist
@@ -13,7 +13,7 @@ from keras.layers import Dense
 from keras.layers import Flatten
 from keras.optimizers import SGD
 
-digit_location = "../images/digits/"
+digit_location = "../resources/out/"
 
 
 # load train and test dataset
@@ -106,7 +106,7 @@ def load_image(filename):
 # load an image and predict the class
 def run_example():
     # load the image
-    directory = "../images/digits"
+    directory = "../resources/out"
     for filename in os.listdir(directory):
         img = load_image(digit_location + filename)
         # load model
