@@ -85,10 +85,6 @@ def run_test_harness2():
     print('> %.3f' % (acc * 100.0))
 
 
-# entry point, run the test harness
-# run_test_harness1()
-
-
 # load and prepare the image
 def load_image(filename):
     # load the image
@@ -117,5 +113,9 @@ def run_example():
         print(filename, digit)
 
 
-# entry point, run the example
-run_example()
+if __name__ == '__main__':
+    # entry point, run the test harness
+    # run_test_harness1()
+
+    # entry point, run the example
+    run_example()

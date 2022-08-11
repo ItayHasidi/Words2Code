@@ -5,6 +5,8 @@ from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 from PIL import ImageDraw
 
+from src.DefineLetters import DefineLetters
+
 
 class App:
 
@@ -168,8 +170,11 @@ class App:
                                                                       "*.*")))
         if filename != "":
             # Change label contents
+            out_img = Image.open(filename)
+            out_img.save("../resources/in/digits.jpg")
+            # calling the OCR function
+            DefineLetters.callExtract()
             self.outputBar.configure(text="Opened: " + filename)
-            # OCR FUNCTION HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def convert(self):
         if self.pattern is not None:
@@ -185,19 +190,20 @@ class App:
             for t in self.GlobalCoord:
                 draw.line(t, fill=(0, 0, 0), width=5)
             # PIL image can be saved as .png .jpg .gif or .bmp file
-            filename = "my_drawing.jpg"
+            filename = "../resources/in/digits.jpg"
             image1.save(filename)
-            # OCR FUNCTION HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # calling the OCR function
+            DefineLetters.callExtract()
             self.c.delete("user_paint")
             self.GlobalCoord = []
             self.tabControl.select(self.Codetab)
 
     def on_close(self):
         if messagebox.askokcancel("Quit", "Sure you want to quit?"):
-            if os.path.isfile("temp.py"):
-                os.remove("temp.py")
-            if os.path.isfile("my_drawing.jpg"):
-                os.remove("my_drawing.jpg")
+            # if os.path.isfile("temp.py"):
+            #     os.remove("temp.py")
+            # if os.path.isfile("digits.jpg"):
+            #     os.remove("digits.jpg")
             self.master.destroy()
 
 
