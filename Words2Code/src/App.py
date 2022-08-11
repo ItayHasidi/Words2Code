@@ -1,7 +1,12 @@
+from re import S
 import subprocess
+# from tkinter import END, GROOVE, N, ROUND, VERTICAL, Canvas, Label, Text, Tk, ttk, filedialog, Image
+from tkinter import *
 from tkinter import ttk, filedialog
-from PIL import Image, ImageTk
-from PIL import ImageDraw
+
+from PIL import Image, ImageTk, ImageDraw
+
+from DefineLetters import DefineLetters
 
 
 class App:
@@ -10,7 +15,7 @@ class App:
         self.master = Tk()
         # sv_ttk.set_theme("dark")  # Set sv_ttk theme
         # Import the tcl file
-        self.master.tk.call('source', 'themes/forest-dark.tcl')
+        self.master.tk.call('source', '../themes/forest-dark.tcl')
 
         # Set the theme with the theme_use method
         ttk.Style().theme_use('forest-dark')
@@ -122,7 +127,7 @@ class App:
         self.c = Canvas(self.HandWritetab, bg="white")
         self.c.grid(row=0, column=0, rowspan=3, sticky="nswe")
 
-        image = Image.open("images/Untitled-lines.png")
+        image = Image.open("../images/Untitled-lines.png")
         resized_image = image.resize((770, 900), Image.ANTIALIAS)
         image = ImageTk.PhotoImage(resized_image)
 
@@ -184,9 +189,14 @@ class App:
             for t in self.GlobalCoord:
                 draw.line(t, fill=(0, 0, 0), width=5)
             # PIL image can be saved as .png .jpg .gif or .bmp file
-            filename = "my_drawing.jpg"
+            filename = "../resources/in/digits.jpg"
             image1.save(filename)
+
+
             # OCR FUNCTION HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            DefineLetters.callExtract()
+
+
             self.c.delete("user_paint")
             self.tabControl.select(self.Codetab)
 

@@ -46,6 +46,7 @@ stbi_uc* image;
 
 
 list<letter_data*> letters;
+list<letter_data*> letters2;
 
 const string     PATH_IN = "../resources/in/", //C:/Users/Itay/source/repos/ConsoleApplication2
 PATH_OUT = "../resources/out/", //C:/Users/Itay/source/repos/ConsoleApplication2
@@ -65,6 +66,7 @@ height = 0,
 channels = 0,
 numLines = 0;
 
+void convertTo28(); 
 
 /*
  * Reads an image and makes it negative, white -> black & black -> white.
@@ -131,7 +133,8 @@ void seperateLines() {
         }
     }
     char* c = const_cast<char*>(IMG_OUT2.c_str());
-    stbi_write_bmp(c, width, height, 1, image_grey /* quality = 100 */);
+    // cout << "printing whole image\n";
+    // stbi_write_bmp(c, width, height, 1, image_grey /* quality = 100 */);
     tempLines = new int[idx / (LINE_RAD * 2)];
     for (int i = 0; i < idx; i++) {
         if (line_data[i] > MIN_PIXEL && !lineFlag) {
@@ -263,6 +266,7 @@ void searchNeighbors(stack<int>* stack) {
         tempLetter->minWidth = widthMin;
         tempLetter->pixels = letter;
         letters.push_back(tempLetter);
+        letters2.push_back(tempLetter);
 
         /*for (int i = 0; i < newHeight; i++) {
             for (int j = 0; j < newWidth; j++){
@@ -310,6 +314,7 @@ void seperateLetters() {
         letter_data* oldIt = new letter_data;
         bool flag = false;
         for (letter_data* it : letters) {
+            // letters2.push_back(it);
             if (flag) {
                 if (abs(oldIt->minWidth - it->minWidth) < MIN_PIXEL_LONG || abs(it->maxWidth - oldIt->maxWidth) < MIN_PIXEL_LONG ||
                     (oldIt->minHeight > it->maxHeight && (oldIt->maxWidth + MIN_PIXEL_LONG < it->minWidth)) ||
@@ -413,29 +418,29 @@ void seperateLetters() {
                     //    //cout << (int) newPixels[i];
 
                     //}
-                    string s;
-                    stringstream ss;
-                    ss << PATH_OUT << IMG_LINE << lineNum << IMG_IDX << letterNum << "two_letters" << IMG_BMP;
-                    ss >> s;
-                    cout << s << "\n";
-                    char* c = const_cast<char*>(s.c_str());
-                    stbi_write_bmp(c, maxWidth - minWidth, maxHeight - minHeight, 1, newPixels /* quality = 100 */);
+                    // string s;
+                    // stringstream ss;
+                    // ss << PATH_OUT << IMG_LINE << lineNum << IMG_IDX << letterNum << "two_letters" << IMG_BMP;
+                    // ss >> s;
+                    // cout << s << "\n";
+                    // char* c = const_cast<char*>(s.c_str());
+                    // stbi_write_bmp(c, maxWidth - minWidth, maxHeight - minHeight, 1, newPixels /* quality = 100 */);
                 }
             }
             else {
                 flag = true;
             }
-            string s;
-            stringstream ss;
-            ss << PATH_OUT << IMG_LINE << lineNum << IMG_IDX << letterNum << IMG_BMP;
-            ss >> s;
-            cout << s << "\n";
-            char* c = const_cast<char*>(s.c_str());
-            stbi_write_bmp(c, it->maxWidth - it->minWidth, it->maxHeight - it->minHeight, 1, it->pixels /* quality = 100 */);
-            letterNum++;
+            // string s;
+            // stringstream ss;
+            // ss << PATH_OUT << IMG_LINE << lineNum << IMG_IDX << letterNum << IMG_BMP;
+            // ss >> s;
+            // // cout << s << "\n";
+            // char* c = const_cast<char*>(s.c_str());
+            // stbi_write_bmp(c, it->maxWidth - it->minWidth, it->maxHeight - it->minHeight, 1, it->pixels /* quality = 100 */);
+            // letterNum++;
             oldIt = it;
         }
-        lineNum++;
+        lineNum++;       
         letters.clear();
         letterNum = 0;
     }
@@ -445,13 +450,14 @@ void seperateLetters() {
  * Gets the letter image and converts it to a 28 by 28 pixel picture.
  */
 void convertTo28() {
-    for (letter_data* it : letters) {
+    int idx = 0;
+    for (letter_data* it : letters2) {
         int newHeight = it->maxHeight - it->minHeight,
-            newWidth = it->maxWidth - it->minWidth;
+            newWidth  = it->maxWidth  - it->minWidth;
         int length = max(newHeight, newWidth);
-        int offset = (newWidth - length) / 2;
-        uint8_t* sqrePix = new uint8_t[length];
-        uint8_t* sqrePix_28 = new uint8_t[PIX_28];
+        int offset = (length - newWidth) / 2;
+        uint8_t* sqrePix    = new uint8_t[length * length];
+        uint8_t* sqrePix_28 = new uint8_t[PIX_28 * PIX_28];
         for (int i = 0; i < length * length; i++) {
             sqrePix[i] = BLACK;
         }
@@ -463,12 +469,22 @@ void convertTo28() {
                 sqrePix[i * length + j + offset] = it->pixels[i * newWidth + j];
             }
         }
-        int ratio = length / PIX_28;
-        for (int i = 0; i < PIX_28 * PIX_28; i++) {
-            sqrePix_28[i] = BLACK;
-        }
+        string s;
+        stringstream ss;
+        ss << "../resources/out/" << idx++ << IMG_BMP;
+        ss >> s;
+        char* c = const_cast<char*>(s.c_str());
+        stbi_write_bmp(c, length, length, 1, sqrePix /* quality = 100 */);
+        // cout << "after print\n";
+        // int ratio = length / PIX_28;
+        // for (int i = 0; i < PIX_28 * PIX_28; i++) {
+        //     float sum = 
+        //     sqrePix_28[i] = (int)(sum / ratio);
+        // }
+
+
         delete[] it->pixels;
-        it->pixels = sqrePix_28;
+        // it->pixels = sqrePix_28;
         delete[] sqrePix;
     }
 }
@@ -486,6 +502,7 @@ int main()
     delete[] lines;
     delete[] visitedPixels;
 
+    return 0;
     //list<letter_data>::iterator it;
     /*for (letter_data* it = letters.front(); it->operator!=(*letters.back()); ++it) {
         delete[] it->pixels;

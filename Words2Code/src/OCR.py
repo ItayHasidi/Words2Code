@@ -13,7 +13,7 @@ from keras.layers import Dense
 from keras.layers import Flatten
 from keras.optimizers import SGD
 
-digit_location = "../images/digits/"
+digit_location = "../resources/out/"
 
 
 # load train and test dataset
@@ -85,10 +85,6 @@ def run_test_harness2():
     print('> %.3f' % (acc * 100.0))
 
 
-# entry point, run the test harness
-# run_test_harness1()
-
-
 # load and prepare the image
 def load_image(filename):
     # load the image
@@ -106,7 +102,7 @@ def load_image(filename):
 # load an image and predict the class
 def run_example():
     # load the image
-    directory = "../images/digits"
+    directory = "../resources/out"
     for filename in os.listdir(directory):
         img = load_image(digit_location + filename)
         # load model
@@ -116,6 +112,10 @@ def run_example():
         digit = argmax(predict_value)
         print(filename, digit)
 
+if __name__ == '__main__':
 
-# entry point, run the example
-run_example()
+    # entry point, run the test harness
+    # run_test_harness1()
+
+    # entry point, run the example
+    run_example()
