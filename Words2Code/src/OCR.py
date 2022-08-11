@@ -1,7 +1,7 @@
 # make a prediction for a new image.
 from numpy import argmax
-from keras.utils.image_utils import load_img
-from keras.utils.image_utils import img_to_array
+# import tensorflow.keras as keras
+from keras.utils.image_utils import load_img, img_to_array
 from keras.models import load_model
 import os
 from keras.datasets import mnist
