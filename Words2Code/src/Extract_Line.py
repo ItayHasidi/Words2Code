@@ -10,8 +10,9 @@ import cv2
 
 PATH = "../resources/in"
 PATH_OUT = "../resources/out"
-MIN_LETTER_HEIGHT = 15
-MIN_LETTER_WIDTH = 15
+PATH_TEMP = "../resources/temp"
+MIN_LETTER_HEIGHT = 5
+MIN_LETTER_WIDTH = 1
 MIN_LETTER_VALUE = 5
 MIN_LETTER_WIDTH_VALUE = 30
 DIVIDER_HEIGHT = 0.1
@@ -26,12 +27,18 @@ Extracts letters line by line and converts it to text.
 
 
 # Saves an image to a file
-def save_img(img, name="l", add_ending: bool = True):
+def save_img(img, name="l", add_ending: bool = True, is_temp: bool = False):
     img2 = Image.fromarray(np.array(img), 'L')
-    if add_ending:
-        img2.save(PATH_OUT + name + ".jpeg")
+    if is_temp:
+        if add_ending:
+            img2.save(PATH_TEMP + name + ".jpeg")
+        else:
+            img2.save(PATH_TEMP + name)
     else:
-        img2.save(PATH_OUT + name)
+        if add_ending:
+            img2.save(PATH_OUT + name + ".jpeg")
+        else:
+            img2.save(PATH_OUT + name)
 
 
 # Gets an image and transposes each cell to its negative value.
@@ -42,7 +49,7 @@ def convert_to_black(img_arr):
         for j in range(len(img_arr[0])):
             temp_num = 255 - img_arr[i][j]
             img_out[i][j] = temp_num
-    save_img(img_out, "blackImg")
+    save_img(img_out, "/blackImg", True, True)
     return img_out
 
 
@@ -59,6 +66,7 @@ def seperate_lines(image):
     lines = []
     n = len(image)
     m = len(image[0])
+    # print(n, m)
     i = 0
     # separates the lines
     while i in range(n):
@@ -195,13 +203,19 @@ def seperate_letters(image: list, name):
     saved_pixels: list = []
     height = len(image)
     width = len(image[0])
-    min_pixel = [height, height]
+    min_pixel = [height, width]
     max_pixel = [0, 0]
     visited_img = np.zeros([height, width])
     cur_i, cur_j = find_letter(image, visited_img, 1)
-    q = []
-    q.append([cur_i, cur_j])
-    # cur_j = (res[0])[1]
+    last_j = cur_j
+    q = [[cur_i, cur_j]]
+    img_name = ""
+    temp_str = ""
+    prev_img = []
+    prev_min_pixel = [height, width]
+    prev_max_pixel = [0, 0]
+    prev_img_name = ""
+
     while cur_j < width:
 
         while len(q) > 0:
@@ -236,6 +250,21 @@ def seperate_letters(image: list, name):
                             q.append([temp_i + n, temp_j + m, image[temp_i + n][temp_j + m]])
 
         if max_pixel[0] - min_pixel[0] > MIN_LETTER_HEIGHT and max_pixel[1] - min_pixel[1] > MIN_LETTER_WIDTH:
+            if cur_j - last_j > MIN_LETTER_WIDTH * 20:
+                temp_str += (str(name) + "_" + str(counter) + "\n")
+
+            prev_height = max_pixel[0] - min_pixel[0]
+            combine_prev = False
+            if prev_max_pixel[1] > min_pixel[1]:
+                if os.path.isfile(PATH_OUT + prev_img_name + ".jpeg"):
+                    os.remove(PATH_OUT + prev_img_name + ".jpeg")
+                # print(max_pixel, min_pixel, prev_max_pixel, prev_min_pixel)
+                min_pixel[0] = min(min_pixel[0], prev_min_pixel[0])
+                min_pixel[1] = min(min_pixel[1], prev_min_pixel[1])
+                max_pixel[0] = max(max_pixel[0], prev_max_pixel[0])
+                max_pixel[1] = max(max_pixel[1], prev_max_pixel[1])
+                combine_prev = True
+
             height_img = int((max_pixel[0] - min_pixel[0]) * 1)
             width_img = int((max_pixel[1] - min_pixel[1]) * 1)
             height_img_offset = height_img - (max_pixel[0] - min_pixel[0])
@@ -243,36 +272,64 @@ def seperate_letters(image: list, name):
 
             res_img = np.zeros([height_img, width_img])
             if -1 < counter < 10:
-                # save_img(res_img, "/" + str(name) + "Q_0" + str(counter))
-                save_img(res_img, "/" + str(name) + "_0" + str(counter))
+                img_name = "/" + str(name) + "_0" + str(counter)
+                save_img(res_img, img_name)
                 res_img = img_to_array(PATH_OUT + "/" + str(name) + "_0" + str(counter) + ".jpeg")
             else:
-                # save_img(res_img, "/" + str(name) + "Q_" + str(counter))
-                save_img(res_img, "/" + str(name) + "_" + str(counter))
+                img_name = "/" + str(name) + "_" + str(counter)
+                save_img(res_img, img_name)
                 res_img = img_to_array(PATH_OUT + "/" + str(name) + "_" + str(counter) + ".jpeg")
+
+            if combine_prev:
+                combine_prev = False
+                # print(max_pixel, min_pixel, prev_height)
+                for k in range(len(prev_img)):
+                    for l in range(len(prev_img[0])):
+                        if prev_height < prev_min_pixel[0]: #and k + prev_height < len(res_img):
+                            # print(k, prev_height, len(prev_img), len(res_img))
+                            res_img[k + prev_height][l] = prev_img[k][l]
+                        else:
+                            res_img[k][l] = prev_img[k][l]
+            # save_img(res_img, img_name+"_temp")
 
             # for idx in saved_pixels:
             #     res_img[idx[0], idx[1]] = image[idx[0]][idx[1]]
+
             for colored_cell in saved_pixels:
                 if 0 < colored_cell[0] - min_pixel[0] + height_img_offset / 2 < height_img \
                         and 0 < colored_cell[1] - min_pixel[1] + width_img_offset / 2 < width_img:
                     res_img[colored_cell[0] - min_pixel[0] + int(height_img_offset / 2)] \
-                [colored_cell[1] - min_pixel[1] + int(width_img_offset / 2)] = image[colored_cell[0]][colored_cell[1]]
-            if -1 < counter < 10:
-                save_img(res_img, "/" + str(name) + "_0" + str(counter))
-            else:
-                save_img(res_img, "/" + str(name) + "_" + str(counter))
+                        [colored_cell[1] - min_pixel[1] + int(width_img_offset / 2)] = image[colored_cell[0]][
+                        colored_cell[1]]
+
+            prev_img = res_img
+            # if -1 < counter < 10:
+            save_img(res_img, img_name)
+            # else:
+            #     save_img(res_img, "/" + str(name) + "_" + str(counter))
             counter += 1
+            prev_img_name = img_name
         # cur_j = max_pixel[1]
+
+        # print(temp_str)
+        space_idx = open("../resources/temp/space_idx.txt", "w")
+        space_idx.write(temp_str)
+        space_idx.close()
 
         # max_pixel = [-1, -1]
         saved_pixels.clear()
         # q.append([0, min_pixel[1]])
-        cur_i, cur_j = find_letter(image, visited_img, max_pixel[1])
+        last_j = cur_j
+        cur_i, cur_j = find_letter(image, visited_img, min_pixel[1])
         # min_pixel[0] = max_pixel[0]
         # min_pixel[1] = PIXEL_RADIUS + max_pixel[1]
-        min_pixel[0] = cur_j
-        min_pixel[1] = cur_j
+        # min_pixel[0] = cur_j
+        # min_pixel[1] = cur_j
+
+        prev_min_pixel = min_pixel
+        prev_max_pixel = max_pixel
+        min_pixel = [height, width]
+        max_pixel = [0, 0]
         q.append([cur_i, cur_j])
         # cur_j = res[1]
     return words
@@ -288,7 +345,7 @@ def get_word(image):
     m = len(image[0])
     temp_sum = 0
     # makes avg of lines
-    f = open(PATH_OUT + "log_values.txt", "w")
+    f = open(PATH_TEMP + "/log_values.txt", "w")
     for i in range(n):
         for j in range(m):
             temp_sum += (image[i][j])
@@ -298,6 +355,7 @@ def get_word(image):
     f.close()
 
     lines_idx = seperate_lines(image)
+    # print(lines_idx)
     new_img = []
     # idx = 0
     for k in range(len(lines_idx)):
@@ -308,7 +366,7 @@ def get_word(image):
                 temp_line.append(image[i][j])
             new_img.append(temp_line)
             i += 1
-        save_img(new_img, "line_num_" + str(k))
+        save_img(new_img, "/line_num_" + str(k), True, True)
         print("pic num: " + str(k) + ", height: " + str(len(new_img)) + ", width: " + str(len(new_img[0])))
         new_img_temp = seperate_letters(new_img, k)  # str(k) + "_" + str(idx))
         # idx += 1
@@ -428,7 +486,7 @@ def resize_img():
 
 
 def main():
-    img_arr = img_to_array(PATH + "/avg_func.jpg")  # line_num_0.jpeg   avg_func.jpeg     5_11.jpeg
+    img_arr = img_to_array(PATH + "/digits.jpg")  # line_num_0.jpeg   avg_func.jpeg     5_11.jpeg
     img = convert_to_black(img_arr)
     get_word(img)
     resize_img()

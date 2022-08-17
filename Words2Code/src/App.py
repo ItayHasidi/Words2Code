@@ -142,8 +142,8 @@ class App:
     def run(self):
         file_name = "temp.py"
         with open(file_name, "w") as new_file:
-            new_file.write(self.codeView.get(0.0, END)) #  1.0, END
-        command = file_name  # the shell command
+            new_file.write(self.codeView.get(1.0, END)) #  1.0, END
+        command = "python " + file_name  # the shell command
         # time.sleep(3)
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         # Launch the shell command:
@@ -216,12 +216,18 @@ class App:
 
     def on_close(self):
         if messagebox.askokcancel("Quit", "Sure you want to quit?"):
-            # if os.path.isfile("temp.py"):
-            #     os.remove("temp.py")
-            # if os.path.isfile("digits.jpg"):
-            #     os.remove("digits.jpg")
+            if os.path.isfile("temp.py"):
+                os.remove("temp.py")
+            if os.path.isfile("../resources/in/digits.jpg"):
+                os.remove("../resources/in/digits.jpg")
+
+            for filename in os.listdir("../resources/out"):
+                os.remove("../resources/out/" + filename)
+            for filename in os.listdir("../resources/temp"):
+                os.remove("../resources/temp/" + filename)
             self.master.destroy()
 
 
 if __name__ == '__main__':
     App()
+

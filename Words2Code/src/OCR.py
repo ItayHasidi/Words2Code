@@ -326,20 +326,22 @@ def regex_filename(filename):
 
 def write_to_file(chars):
     txt_file = open('../output/output_text.txt', 'w')
+    space_idx = open("../resources/temp/space_idx.txt")
+    space_line = space_idx.readline()
     prev_line = 0
-    prev_letter = 0
     txt = ""
-    # prev_char = ''
     for c in chars:
         filename, char = c
         line, letter = regex_filename(filename)
         if prev_line < line:
             txt += "\n"
-        if prev_letter + 1 < letter:
-            txt += " "
         txt += char
+        arg = str(line) + "_" + str(letter)
+        if space_line and arg == space_line[:-1]:
+            txt += " "
+            space_line = space_idx.readline()
         prev_line = line
-        prev_letter = letter
+    space_idx.close()
     for s in range(len(txt)):
         if txt[s] == 'O' and \
                 (s - 1 >= 0 and s + 1 < len(txt) and (
@@ -393,8 +395,11 @@ def load_dataset():
     X = []
     y = []
     # character_curated = [ord(c) for c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']
+    # character_curated = [ord(c) for c in
+    #                      '!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~']
+
     character_curated = [ord(c) for c in
-                         '!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~']
+                         '!\"#%&\'()*+,-./0123456789:;<=>[]_abcdefghijklmnopqrstuvwxyz{|}']
     for i in character_curated:
         path_img = path + str(i) + '/'
         for file_name in [f for f in listdir(path_img) if isfile(join(path_img, f))]:
@@ -499,9 +504,9 @@ def run_test_harness1():
     model.add(Dense(trainY.shape[1], activation='softmax'))
 
     # fit model
-    model.fit(trainX, trainY, epochs=100, batch_size=512, verbose=1)  # 10, 32, 0
+    model.fit(trainX, trainY, epochs=20, batch_size=32, verbose=1)  # 10, 32, 0
     # save model
-    model.save('../models/new_model_%_100_512_2.h5')
+    model.save('../models/new_model_%_20_32_3.h5')
 
 
 # run the test harness for evaluating a model
@@ -541,7 +546,7 @@ def run_example():
     for filename in os.listdir(directory):
         img = load_image(digit_location + filename)
         # load model
-        model = load_model('../models/new_model_%_100_512_2.h5')
+        model = load_model('../models/new_model_%_20_32_3.h5')
 
         # predict the class
         predict_value = model.predict(img)
@@ -551,7 +556,7 @@ def run_example():
         # print(filename, get_ascii(digit), digit)
         print(filename, chr(digit), digit)
     write_to_file(chars)
-    print()
+    # print()
 
 
 if __name__ == '__main__':
@@ -559,7 +564,7 @@ if __name__ == '__main__':
     # train_chars()
 
     # entry point, run the test harness
-    # run_test_harness1()
+    run_test_harness1()
 
     # entry point, run the example
     run_example()
