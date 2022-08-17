@@ -1,13 +1,14 @@
+import time
 from re import S
 import subprocess
 # from tkinter import END, GROOVE, N, ROUND, VERTICAL, Canvas, Label, Text, Tk, ttk, filedialog, Image
 from tkinter import *
-from tkinter import ttk, filedialog
-
+from tkinter import ttk, filedialog, messagebox
+import os
 from PIL import Image, ImageTk, ImageDraw
 
 from DefineLetters import DefineLetters
-
+from src import Extract_Line, OCR
 
 
 class App:
@@ -141,11 +142,14 @@ class App:
     def run(self):
         file_name = "temp.py"
         with open(file_name, "w") as new_file:
-            new_file.write(self.codeView.get(1.0, END))
+            new_file.write(self.codeView.get(0.0, END)) #  1.0, END
         command = file_name  # the shell command
+        # time.sleep(3)
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         # Launch the shell command:
         output, err = process.communicate()
+        print(output)
+        print(err)
         if err:
             text = err
         else:
@@ -190,13 +194,21 @@ class App:
             image1 = Image.new("RGB", (x1, y1), (255, 255, 255))
             draw = ImageDraw.Draw(image1)
             for t in self.GlobalCoord:
-                draw.line(t, fill=(0, 0, 0), width=5)
+                draw.line(t, fill=(0, 0, 0), width=3)
             # PIL image can be saved as .png .jpg .gif or .bmp file
             filename = "../resources/in/digits.jpg"
             image1.save(filename)
 
             # calling the OCR function
             DefineLetters.callExtract()
+            # Extract_Line.main()
+            # OCR.run_example()
+            file_name = "../src/temp.py"
+            with open(file_name, "r") as new_file:
+                code_line = new_file.readline()
+                while code_line:
+                    self.codeView.insert("end", code_line)
+                    code_line = new_file.readline()
 
             self.c.delete("user_paint")
             self.GlobalCoord = []
